@@ -69,7 +69,7 @@ class Generator(nn.Module):
         self.z_dim = z_dim
         self.num_classes = num_classes
         self.mixed_precision = mixed_precision
-        conditional_bn = True if conditional_strategy in ["ACGAN", "cGAN", "ContraGAN", "Proxy_NCA_GAN", "XT_Xent_GAN"] else False
+        conditional_bn = True if conditional_strategy in ["ACGAN", "cGAN", "ContraGAN", "Proxy_NCA_GAN", "NT_Xent_GAN"] else False
 
         if g_spectral_norm:
             self.linear0 = snlinear(in_features=self.z_dim, out_features=self.in_dims[0]*4*4)
@@ -200,7 +200,7 @@ class Discriminator(nn.Module):
 
         if d_spectral_norm:
             self.linear1 = snlinear(in_features=512, out_features=1)
-            if self.conditional_strategy in ['ContraGAN', 'Proxy_NCA_GAN', 'XT_Xent_GAN']:
+            if self.conditional_strategy in ['ContraGAN', 'Proxy_NCA_GAN', 'NT_Xent_GAN']:
                 self.linear2 = snlinear(in_features=512, out_features=hypersphere_dim)
                 if self.nonlinear_embed:
                     self.linear3 = snlinear(in_features=hypersphere_dim, out_features=hypersphere_dim)
@@ -213,7 +213,7 @@ class Discriminator(nn.Module):
                 pass
         else:
             self.linear1 = linear(in_features=512, out_features=1)
-            if self.conditional_strategy in ['ContraGAN', 'Proxy_NCA_GAN', 'XT_Xent_GAN']:
+            if self.conditional_strategy in ['ContraGAN', 'Proxy_NCA_GAN', 'NT_Xent_GAN']:
                 self.linear2 = linear(in_features=512, out_features=hypersphere_dim)
                 if self.nonlinear_embed:
                     self.linear3 = linear(in_features=hypersphere_dim, out_features=hypersphere_dim)
@@ -246,7 +246,7 @@ class Discriminator(nn.Module):
                 authen_output = torch.squeeze(self.linear1(h))
                 return authen_output
 
-            elif self.conditional_strategy in ['ContraGAN', 'Proxy_NCA_GAN', 'XT_Xent_GAN']:
+            elif self.conditional_strategy in ['ContraGAN', 'Proxy_NCA_GAN', 'NT_Xent_GAN']:
                 authen_output = torch.squeeze(self.linear1(h))
                 cls_proxy = self.embedding(label)
                 cls_embed = self.linear2(h)

@@ -13,7 +13,7 @@ from utils.sample import sample_latents, sample_1hot, make_mask, generate_images
 from utils.plot import plot_img_canvas, plot_confidence_histogram, plot_img_canvas
 from utils.utils import elapsed_time, calculate_all_sn, find_and_remove
 from utils.losses import calc_derv4gp, calc_derv, latent_optimise
-from utils.losses import Conditional_Contrastive_loss, Proxy_NCA_loss, XT_Xent_loss
+from utils.losses import Conditional_Contrastive_loss, Proxy_NCA_loss, NT_Xent_loss
 from utils.diff_aug import DiffAugment
 from utils.icr import ICR_Aug
 from utils.calculate_accuracy import calculate_accuracy
@@ -175,8 +175,8 @@ class Trainer:
             else:
                 self.embedding_layer = self.dis_model.embedding
             self.NCA_criterion = Proxy_NCA_loss(self.default_device, self.embedding_layer, self.num_classes, self.batch_size)
-        elif self.conditional_strategy == 'XT_Xent_GAN':
-            self.XT_Xent_criterion = XT_Xent_loss(self.default_device, self.batch_size)
+        elif self.conditional_strategy == 'NT_Xent_GAN':
+            self.NT_Xent_criterion = NT_Xent_loss(self.default_device, self.batch_size)
         else:
             pass
 
@@ -245,13 +245,13 @@ class Trainer:
                 self.D_optimizer.zero_grad()
                 for acml_step in range(self.accumulation_steps):
                     try:
-                        if self.consistency_reg or self.conditional_strategy == "XT_Xent_GAN":
+                        if self.consistency_reg or self.conditional_strategy == "NT_Xent_GAN":
                             real_images, real_labels, real_images_aug = next(train_iter)
                         else:
                             real_images, real_labels = next(train_iter)
                     except StopIteration:
                         train_iter = iter(self.train_dataloader)
-                        if self.consistency_reg or self.conditional_strategy == "XT_Xent_GAN":
+                        if self.consistency_reg or self.conditional_strategy == "NT_Xent_GAN":
                             real_images, real_labels, real_images_aug = next(train_iter)
                         else:
                             real_images, real_labels = next(train_iter)
@@ -306,7 +306,7 @@ class Trainer:
                                                                                             real_labels, t, self.margin)
                         elif self.conditional_strategy == "Proxy_NCA_GAN":
                             dis_acml_loss += self.contrastive_lambda*self.NCA_criterion(cls_embed_real, cls_proxies_real, real_labels)
-                        elif self.conditional_strategy == "XT_Xent_GAN":
+                        elif self.conditional_strategy == "NT_Xent_GAN":
                             pass
                         else:
                             raise NotImplementedError
@@ -323,11 +323,11 @@ class Trainer:
                                 self.ada_aug_p = min(1.0, max(0.0, self.ada_aug_p))
                                 self.ada_augment.mul_(0.0)
 
-                        if self.consistency_reg or self.conditional_strategy == "XT_Xent_GAN":
+                        if self.consistency_reg or self.conditional_strategy == "NT_Xent_GAN":
                             real_images_aug = real_images_aug.to(self.default_device)
                             _, cls_real_aug_embed, dis_real_aug_authen_out = self.dis_model(real_images_aug, real_labels)
-                            if self.conditional_strategy == "XT_Xent_GAN":
-                                dis_acml_loss += self.contrastive_lambda*self.XT_Xent_criterion(cls_embed_real, cls_real_aug_embed, t)
+                            if self.conditional_strategy == "NT_Xent_GAN":
+                                dis_acml_loss += self.contrastive_lambda*self.NT_Xent_criterion(cls_embed_real, cls_real_aug_embed, t)
                             if self.consistency_reg:
                                 consistency_loss = self.l2_loss(dis_out_real, dis_real_aug_authen_out)
                                 dis_acml_loss += self.consistency_lambda*consistency_loss
@@ -389,7 +389,7 @@ class Trainer:
                             gen_acml_loss += self.contrastive_lambda*self.contrastive_criterion(cls_out_fake, cls_proxies_fake, fake_cls_mask, fake_labels, t, 0.0)
                         elif self.conditional_strategy == "Proxy_NCA_GAN":
                             gen_acml_loss += self.contrastive_lambda*self.NCA_criterion(cls_out_fake, cls_proxies_fake, fake_labels)
-                        elif self.conditional_strategy == "XT_Xent_GAN":
+                        elif self.conditional_strategy == "NT_Xent_GAN":
                             pass
                         else:
                             raise NotImplementedError

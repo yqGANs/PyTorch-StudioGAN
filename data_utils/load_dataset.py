@@ -88,7 +88,7 @@ class LoadDataset(Dataset):
 
         self.transforms = transforms.Compose(self.transforms)
 
-        if self.consistency_reg or self.conditional_strategy == "XT_Xent_GAN":
+        if self.consistency_reg or self.conditional_strategy == "NT_Xent_GAN":
             self.aug_tranforms = transforms.Compose([transforms.RandomHorizontalFlip(),
                                                      transforms.RandomCrop((self.resize_size, self.resize_size),
                                                                             padding=self.pad,
@@ -155,7 +155,7 @@ class LoadDataset(Dataset):
             img, label = self.data[index]
             img, label = self.transforms(img), int(label)
 
-        if self.consistency_reg or self.conditional_strategy == "XT_Xent_GAN":
+        if self.consistency_reg or self.conditional_strategy == "NT_Xent_GAN":
             img_aug = self.aug_tranforms(img)
             return self.stadard_transform(img), label, self.stadard_transform(img_aug)
 
