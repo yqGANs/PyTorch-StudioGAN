@@ -12,7 +12,7 @@
     "train": {
       "model": {
         "architecture": "resgan",
-        "conditional_strategy": "cGAN",
+        "conditional_strategy": "projGAN",
         "pos_collected_numerator":false,
         "hypersphere_dim": "N/A",
         "nonlinear_embed": false,

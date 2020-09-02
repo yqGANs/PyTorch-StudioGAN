@@ -521,7 +521,7 @@ class Trainer:
                         if self.conditional_strategy == "ACGAN":
                             cls_out_real, dis_out_real = self.dis_model(real_images, real_labels)
                             cls_out_fake, dis_out_fake = self.dis_model(fake_images, fake_labels)
-                        elif self.conditional_strategy == "cGAN" or self.conditional_strategy == "no":
+                        elif self.conditional_strategy == "projGAN" or self.conditional_strategy == "no":
                             dis_out_real = self.dis_model(real_images, real_labels)
                             dis_out_fake = self.dis_model(fake_images, fake_labels)
                         else:
@@ -535,7 +535,7 @@ class Trainer:
                             if self.conditional_strategy == "ACGAN":
                                 cls_out_real_aug, dis_out_real_aug = self.dis_model(real_images_aug, real_labels)
                                 cls_out_fake_aug, dis_out_fake_aug = self.dis_model(fake_images_aug, fake_labels)
-                            elif self.conditional_strategy == "cGAN" or self.conditional_strategy == "no":
+                            elif self.conditional_strategy == "projGAN" or self.conditional_strategy == "no":
                                 dis_out_real_aug = self.dis_model(real_images_aug, real_labels)
                                 dis_out_fake_aug = self.dis_model(fake_images_aug, fake_labels)
                             else:
@@ -549,7 +549,7 @@ class Trainer:
                             fake_images_zaug = self.gen_model(z_t, fake_labels)
                             if self.conditional_strategy == "ACGAN":
                                 cls_out_fake_zaug, dis_out_fake_zaug = self.dis_model(fake_images_zaug, fake_labels)
-                            elif self.conditional_strategy == "cGAN" or self.conditional_strategy == "no":
+                            elif self.conditional_strategy == "projGAN" or self.conditional_strategy == "no":
                                 dis_out_fake_zaug = self.dis_model(fake_images_zaug, fake_labels)
                             else:
                                 raise NotImplementedError
@@ -579,7 +579,7 @@ class Trainer:
                             real_images_aug = real_images_aug.to(self.default_device)
                             if self.conditional_strategy == "ACGAN":
                                 cls_out_real_aug, dis_out_real_aug = self.dis_model(real_images_aug, real_labels)
-                            elif self.conditional_strategy == "cGAN" or self.conditional_strategy == "no":
+                            elif self.conditional_strategy == "projGAN" or self.conditional_strategy == "no":
                                 dis_out_real_aug = self.dis_model(real_images_aug, real_labels)
                             else:
                                 raise NotImplementedError
@@ -635,7 +635,7 @@ class Trainer:
 
                         if self.conditional_strategy == "ACGAN":
                             cls_out_fake, dis_out_fake = self.dis_model(fake_images, fake_labels)
-                        elif self.conditional_strategy == "cGAN" or self.conditional_strategy == "no":
+                        elif self.conditional_strategy == "projGAN" or self.conditional_strategy == "no":
                             dis_out_fake = self.dis_model(fake_images, fake_labels)
                         else:
                             raise NotImplementedError
@@ -970,7 +970,7 @@ class Trainer:
                     cls_proxies_real, cls_embed_real, dis_out_real = self.dis_model(real_images, real_labels, evaluation=True)
                 elif self.conditional_strategy == "ACGAN":
                     cls_out_real, dis_out_real = self.dis_model(real_images, real_labels, evaluation=True)
-                elif self.conditional_strategy == "cGAN" or self.conditional_strategy == "no":
+                elif self.conditional_strategy == "projGAN" or self.conditional_strategy == "no":
                     dis_out_real = self.dis_model(real_images, real_labels, evaluation=True)
 
                 logits = self.linear_model(cls_embed_real)
@@ -997,7 +997,7 @@ class Trainer:
                     cls_proxies_real, cls_embed_real, dis_out_real = self.dis_model(real_images, real_labels, evaluation=True)
                 elif self.conditional_strategy == "ACGAN":
                     cls_out_real, dis_out_real = self.dis_model(real_images, real_labels, evaluation=True)
-                elif self.conditional_strategy == "cGAN" or self.conditional_strategy == "no":
+                elif self.conditional_strategy == "projGAN" or self.conditional_strategy == "no":
                     dis_out_real = self.dis_model(real_images, real_labels, evaluation=True)
 
                 logits_test = self.linear_model(cls_embed_real)
