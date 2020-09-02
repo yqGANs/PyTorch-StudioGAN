@@ -435,7 +435,7 @@ class Trainer:
                 with torch.no_grad():
                     self.gen_model.eval()
                     if self.Gen_copy is not None:
-                        self.Gen_copy.train()
+                        self.Gen_copy.eval()
                     generator = self.Gen_copy if self.Gen_copy is not None else self.gen_model
 
                     generated_images = generator(self.fixed_noise, self.fixed_fake_labels)
@@ -694,7 +694,7 @@ class Trainer:
                 with torch.no_grad():
                     self.gen_model.eval()
                     if self.Gen_copy is not None:
-                        self.Gen_copy.train()
+                        self.Gen_copy.eval()
                     generator = self.Gen_copy if self.Gen_copy is not None else self.gen_model
 
                     generated_images = generator(self.fixed_noise, self.fixed_fake_labels)
@@ -783,7 +783,7 @@ class Trainer:
             self.dis_model.eval()
             self.gen_model.eval()
             if self.Gen_copy is not None:
-                self.Gen_copy.train()
+                self.Gen_copy.eval()
             generator = self.Gen_copy if self.Gen_copy is not None else self.gen_model
 
             if self.latent_op:
@@ -829,6 +829,8 @@ class Trainer:
 
             self.dis_model.train()
             self.gen_model.train()
+            if self.Gen_copy is not None:
+                self.Gen_copy.train()
 
         return is_best
     ################################################################################################################################
@@ -838,7 +840,7 @@ class Trainer:
         with torch.no_grad():
             self.gen_model.eval()
             if self.Gen_copy is not None:
-                self.Gen_copy.train()
+                self.Gen_copy.eval()
             generator = self.Gen_copy if self.Gen_copy is not None else self.gen_model
 
             resnet50_model = torch.hub.load('pytorch/vision:v0.6.0', 'resnet50', pretrained=True)
@@ -898,12 +900,14 @@ class Trainer:
                     canvas = np.concatenate((canvas, row_images), axis=0)
 
         self.gen_model.train()
+        if self.Gen_copy is not None:
+            self.Gen_copy.train()
     ################################################################################################################################
 
     def linear_interpolation(self, nrow, ncol, fix_z, fix_y):
         self.gen_model.eval()
         if self.Gen_copy is not None:
-            self.Gen_copy.train()
+            self.Gen_copy.eval()
         generator = self.Gen_copy if self.Gen_copy is not None else self.gen_model
         assert int(fix_z)*int(fix_y) != 1, "unable to switch fix_z and fix_y on together!"
 
@@ -934,6 +938,8 @@ class Trainer:
                         format(run_name=self.run_name, fix_flag=name), self.logger, ncol)
 
         self.gen_model.train()
+        if self.Gen_copy is not None:
+            self.Gen_copy.train()
         ################################################################################################################################
 
     def linear_classification(self, total_step):

@@ -140,8 +140,6 @@ def train_framework(seed, disable_debugging_API, fused_optimization, num_workers
     D_loss = {'vanilla': loss_dcgan_dis, 'hinge': loss_hinge_dis, 'wasserstein': loss_wgan_dis}
     ADA_cutoff = {'vanilla': 0.5, 'hinge': 0.0, 'wasserstein': 0.0}
 
-    import apex
-
     if optimizer == "SGD":
         if fused_optimization:
             G_optimizer = apex.optimizers.FusedSGD(filter(lambda p: p.requires_grad, Gen.parameters()), g_lr, momentum=momentum, nesterov=nesterov)
